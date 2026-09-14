@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Secure Auth Portal</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo">Secure Auth Portal</div>
+
+        <div class="nav-links">
+            <span>Welcome, <%= user.name %></span>
+            <a href="/logout" class="logout-link">Logout</a>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
+
+        <div class="dashboard-card">
+            <h1>Welcome, <%= user.name %>! 👋</h1>
+
+            <p>
+                You have successfully logged in to your secure account.
+            </p>
+
+            <div class="user-info">
+                <h2>Account Information</h2>
+
+                <div class="info-row">
+                    <strong>Name:</strong>
+                    <span>
+                        <%= user.name %>
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <strong>Email:</strong>
+                    <span>
+                        <%= user.email %>
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <strong>Account Created:</strong>
+                    <span>
+                        <%= createdAtIST %> IST
+                    </span>
+                </div>
+            </div>
+
+            <div class="security-box">
+                <h2>🔐 Security Status</h2>
+                <p>✓ Authentication successful</p>
+                <p>✓ Session is active</p>
+                <p>✓ Protected route accessed</p>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>
