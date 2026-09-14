@@ -6,12 +6,14 @@ const SQLiteStore = require("connect-sqlite3")(session);
 const path = require("path");
 const dotenv = require("dotenv");
 
-const db = require("./database/db");
-
 dotenv.config();
+
+const db = require("./database/db");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Trust Render's proxy
 app.set("trust proxy", 1);
 
 // ===============================
@@ -46,6 +48,8 @@ app.use(
         saveUninitialized: false,
         cookie: {
             httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
             maxAge: 1000 * 60 * 60
         }
     })
@@ -300,9 +304,12 @@ app.post("/forgot-password", (req, res) => {
                 user.id
             );
 
-            // Create password reset link
-            const baseUrl = `${req.protocol}://${req.get("host")}`;
+            // Use BASE_URL from environment variables
+            const baseUrl =
+                process.env.BASE_URL ||
+                `http://localhost:${PORT}`;
 
+            // Create password reset link
             const resetLink =
                 `${baseUrl}/reset-password/${resetToken}`;
 
@@ -315,7 +322,7 @@ app.post("/forgot-password", (req, res) => {
         // Do not reveal whether the email exists
         res.render("forgot-password", {
             success:
-                "If an account exists for this email, a password reset link will be sent."
+                "If an account exists for this email, a password reset link will be generated."
         });
 
     } catch (error) {
