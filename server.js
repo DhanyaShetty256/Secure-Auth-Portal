@@ -301,6 +301,7 @@ app.post("/forgot-password", (req, res) => {
 
             // Create password reset link
             const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
+            console.log("BASE_URL:", process.env.BASE_URL);
 
             const resetLink =
                 `${baseUrl}/reset-password/${resetToken}`;
