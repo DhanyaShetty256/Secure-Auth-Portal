@@ -1,57 +1,87 @@
 # Secure Auth Portal
 
-A complete user authentication system developed as part of the **YR NOVATECH Full Stack Development Internship – Task 3**.
+A secure user authentication system and RESTful API developed as part of the **YR NOVATECH Full Stack Development Internship – Task 3**.
 
-The project provides secure user registration, login, logout, password reset, session management, form validation, error handling, and protected routes using **Node.js, Express.js, SQLite, and EJS**.
+The project provides user registration, login, logout, password reset, session management, input validation, error handling, protected routes, and a REST API for complete CRUD operations on users.
+
+The application is built using **Node.js, Express.js, SQLite, Better-SQLite3, EJS, and bcryptjs**.
 
 ---
 
 ## 🚀 Features
 
+### Authentication
+
 - User registration / sign-up
 - User login
 - User logout
-- Password hashing
+- Password hashing using bcrypt
 - Password reset functionality
 - Secure password reset tokens
 - Password reset token expiration
 - Session management
 - Protected dashboard route
-- Form validation
+- Generic authentication error messages
 - Duplicate email detection
-- Login error handling
-- Registration error handling
-- Password reset validation
-- SQLite database
-- Responsive authentication interface
+
+### REST API
+
+- RESTful API using Express.js
+- JSON request and response handling
+- Get all users
+- Get user by ID
+- Create a new user
+- Update an existing user
+- Delete a user
+- Input validation
+- Duplicate email handling
+- API error handling
+- Appropriate HTTP status codes
+- SQLite database integration
+
+### Security
+
+- Passwords are never stored as plain text
+- Passwords are hashed using bcrypt
+- Password hashes are never returned through the API
+- Password reset tokens are not exposed through API responses
+- Email addresses are normalized to lowercase
+- Duplicate email addresses are prevented
+- HTTP-only session cookies
 - Environment variable support
-- Secure session cookies with HTTP-only protection
+- Protected routes
+- Generic login error messages
 
 ---
 
 ## 🛠️ Technologies Used
 
 ### Backend
+
 - Node.js
 - Express.js
 
 ### Database
+
 - SQLite
 - Better-SQLite3
 
 ### Authentication & Security
+
 - bcryptjs
 - express-session
 - connect-sqlite3
 - crypto
 
 ### Frontend
+
 - HTML
 - CSS
 - JavaScript
 - EJS
 
 ### Other Tools
+
 - dotenv
 - Git
 - GitHub
@@ -64,7 +94,8 @@ The project provides secure user registration, login, logout, password reset, se
 Secure-Auth-Portal/
 │
 ├── database/
-│   └── db.js
+│   ├── db.js
+│   └── auth.db
 │
 ├── public/
 │   └── style.css
@@ -78,15 +109,14 @@ Secure-Auth-Portal/
 │
 ├── .env
 ├── .gitignore
+├── API-DOCUMENTATION.md
 ├── package.json
 ├── package-lock.json
 └── server.js
 
-```
-
 Database files and environment variables are excluded from GitHub using .gitignore.
 
-## 🔐 Authentication Flow
+🔐 Authentication Flow
 1. User Registration
 
 The user provides:
@@ -119,19 +149,17 @@ Invalid credentials return a general error message without revealing whether the
 
 The application uses Express Session for authentication sessions.
 
-After successful login:
-
+The authentication flow is:
 
 User Login
-     ↓
+    ↓
 Credentials Verified
-     ↓
+    ↓
 Session Created
-     ↓
+    ↓
 User ID Stored in Session
-     ↓
+    ↓
 Protected Dashboard Access
-
 
 Sessions are stored using SQLite through connect-sqlite3.
 
@@ -162,9 +190,6 @@ When the user logs out:
 The current session is destroyed.
 The session cookie is cleared.
 The user is redirected to the login page.
-
-This prevents the previous authenticated session from being reused.
-
 6. Password Reset
 
 The application provides a password recovery process.
@@ -177,11 +202,9 @@ A cryptographically secure reset token is generated.
 The token is stored in the database.
 An expiration time is assigned.
 A password reset link is generated.
-The token is valid for a limited period.
+The token remains valid for a limited period.
 
 The application does not reveal whether a particular email address is registered.
-
-The user can then create a new password using the reset link.
 
 After a successful password reset:
 
@@ -190,26 +213,124 @@ The reset token is removed.
 The token expiration value is removed.
 The user can log in using the new password.
 
+🌐 REST API
 
-## 🛡️ Security Measures
+The project also provides a RESTful API for managing users.
 
-The application implements several security practices.
+All REST API responses are returned in JSON format.
 
+Base URL
+http://localhost:3000
+API Base Path
+/api
+REST API Endpoints
+Operation	Method	Endpoint	Description
+Get all users	GET	/api/users	Returns all users
+Get user	GET	/api/users/:id	Returns a user by ID
+Create user	POST	/api/users	Creates a new user
+Update user	PUT	/api/users/:id	Updates an existing user
+Delete user	DELETE	/api/users/:id	Deletes a user
+
+These endpoints provide the required CRUD operations:
+
+Create → POST
+Read → GET
+Update → PUT
+Delete → DELETE
+REST API Request Example
+Create User
+POST /api/users
+
+Content-Type:
+
+application/json
+
+Request body:
+
+{
+  "name": "Test User",
+  "email": "testuser@example.com",
+  "password": "TestPassword123"
+}
+
+Successful response:
+
+{
+  "success": true,
+  "message": "User created successfully.",
+  "data": {
+    "id": 3,
+    "name": "Test User",
+    "email": "testuser@example.com",
+    "created_at": "2026-09-18 12:53:45"
+  }
+}
+
+The password is not included in the response.
+
+REST API Validation
+
+The API validates:
+
+Required fields
+Name length
+Email format
+Password length
+Duplicate email addresses
+User ID format
+User existence before update or deletion
+
+📊 HTTP Status Codes
+Status Code	Meaning
+200	Request successful
+201	Resource successfully created
+400	Invalid request or validation error
+404	User or API endpoint not found
+409	Duplicate email conflict
+500	Internal server error
+
+🗄️ Database
+
+The project uses SQLite as its database.
+
+The main database file is:
+
+database/auth.db
+
+The database is automatically created when the application starts.
+
+Users Table
+
+The users table contains:
+
+Field	Type	Description
+id	INTEGER	Unique user ID
+name	TEXT	User's full name
+email	TEXT	Unique email address
+password	TEXT	Hashed password
+reset_token	TEXT	Password reset token
+reset_token_expires	INTEGER	Reset token expiration time
+created_at	DATETIME	Account creation date
+API Security
+
+The following database fields are never returned by the REST API:
+
+password
+reset_token
+reset_token_expires
+
+Only safe user information such as ID, name, email, and account creation date is returned.
+
+🛡️ Security Measures
 Password Hashing
 
 Passwords are never stored as plain text.
 
-Passwords are hashed using:
-
-bcrypt
-
-with a secure hashing cost factor.
+Passwords are hashed using bcryptjs.
 
 Secure Reset Tokens
 
-Password reset tokens are generated using Node.js cryptographic random bytes.
-
-This makes the reset tokens difficult to guess.
+Password reset tokens are generated using Node.js cryptographic functions.
 
 Token Expiration
 
@@ -227,7 +348,7 @@ This helps prevent client-side JavaScript from directly accessing the session co
 
 Environment Variables
 
-Sensitive configuration such as the session secret is stored in an environment file:
+Sensitive configuration such as the session secret is stored in:
 
 .env
 
@@ -243,37 +364,20 @@ Password length
 Email input
 Password confirmation
 Duplicate email registration
+REST API request data
 Protected Routes
 
 Authentication is checked before allowing access to protected pages such as the dashboard.
 
 Generic Authentication Errors
 
-The login system uses:
+The login system uses a general message such as:
 
 Invalid email or password.
 
-instead of revealing whether a specific email account exists.
+This helps avoid revealing whether a particular email account exists.
 
-This helps reduce user-account enumeration.
-
-## 🗄️ Database
-
-The project uses SQLite as its real database.
-
-The main users table stores:
-
-User ID
-Name
-Email
-Hashed password
-Password reset token
-Password reset token expiration
-Account creation date
-
-The database is created automatically when the application starts.
-
-## ⚙️ Installation
+⚙️ Installation
 1. Clone the Repository
 git clone https://github.com/DhanyaShetty256/Secure-Auth-Portal.git
 2. Open the Project
@@ -282,7 +386,9 @@ cd Secure-Auth-Portal
 npm install
 4. Create Environment File
 
-Create a .env file in the project root:
+Create a .env file in the project root.
+
+Add:
 
 SESSION_SECRET=your-secure-session-secret
 
@@ -295,9 +401,9 @@ The application will run at:
 
 http://localhost:3000
 
-## 🧪 Testing
+🧪 Testing
 
-The following authentication scenarios were tested:
+The authentication system was tested for:
 
 User registration
 Duplicate email registration
@@ -314,10 +420,19 @@ Password confirmation validation
 Login after password reset
 Session-based authentication
 
+The REST API was tested for:
 
-## 📌 Main Routes
+GET /api/users
+GET /api/users/:id
+POST /api/users
+PUT /api/users/:id
+DELETE /api/users/:id
+
+The CRUD operations were tested using the local Express server and PowerShell.
+
+📌 Main Web Routes
 Method	Route	Description
-GET	/	Home
+GET	/	Home page
 GET	/register	Registration page
 POST	/register	Create account
 GET	/login	Login page
@@ -329,27 +444,61 @@ POST	/forgot-password	Generate reset token
 GET	/reset-password/:token	Reset password page
 POST	/reset-password/:token	Update password
 
-## 🎯 Project Objective
+📚 API Documentation
 
-The objective of this project is to demonstrate the implementation of a complete authentication system using a backend framework and a real database.
+Detailed REST API documentation is available in:
 
-The project focuses on authentication, authorization, session handling, password security, validation, error handling, and protected resources.
+API-DOCUMENTATION.md
 
-## 👩‍💻 Author
+The documentation includes:
+
+API overview
+Base URL
+User data model
+CRUD endpoints
+Request examples
+JSON responses
+Validation rules
+HTTP status codes
+Error handling
+Database integration
+Security information
+API testing information
+
+🎯 Project Objective
+
+The objective of this project is to demonstrate the implementation of a complete authentication system and RESTful backend using Node.js, Express.js, and a real SQLite database.
+
+The project demonstrates:
+
+User authentication
+Authorization
+Session management
+Password security
+Input validation
+Error handling
+Protected resources
+RESTful API design
+CRUD operations
+Database integration
+JSON responses
+
+👩‍💻 Author
 
 Dhanya Shetty
 
-BCA Student
+BCA Final-Year Student
+
 Full Stack Development Intern
 
-## 📄 Internship Task
+📄 Internship Task
 
 Organization: YR NOVATECH
 
-Task: Task 3 – User Authentication System
+Task: Task 3 – REST API & Backend Development
 
 Domain: Full Stack Development
 
-## 🔗 GitHub Repository
+🔗 GitHub Repository
 
 https://github.com/DhanyaShetty256/Secure-Auth-Portal
